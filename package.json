@@ -1,0 +1,40 @@
+{
+  "name": "slidev-poll-ws-server",
+  "version": "0.0.0",
+  "description": "WebSocket server for slidev-component-poll",
+  "homepage": "https://github.com/Smile-SA/slidev-poll-ws-server",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Smile-SA/slidev-poll-ws-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Smile-SA/slidev-poll-ws-server/issues"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ."
+  },
+  "keywords": [
+    "vuejs",
+    "slidev",
+    "poll",
+    "WebSocket"
+  ],
+  "author": {
+    "name": "Tony Cabaye",
+    "email": "tonai59+github@gmail.com",
+    "url": "https://github.com/tonai"
+  },
+  "license": "GPL",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.12.1"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.4",
+    "typescript": "^4.9.5"
+  }
+}
