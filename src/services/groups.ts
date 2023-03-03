@@ -26,14 +26,14 @@ export function initGroup(groups: Groups, id: string, state?: PollState) {
     state: state ?? {},
     updated: date,
   };
+  log(`--- INIT GROUP "${id}" ---`);
+  log(group);
   groups.set(id, group);
 }
 
 export function updateGroup(groups: Groups, id: string, group: Group) {
   group.updated = new Date();
   groups.set(id, group);
-  if (process.env.DEBUG === 'info') {
-    log(`--- GROUP "${id}" DATA ---`);
-    log(group);
-  }
+  log(`--- GROUP "${id}" DATA ---`);
+  log(group);
 }

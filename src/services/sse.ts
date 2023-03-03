@@ -69,24 +69,23 @@ export function initServer(port: number) {
         let body = "";
         req.on("data", (chunk) => (body += chunk));
         req.on("end", () => {
-          log(body);
           const data = JSON.parse(body);
-          log("--- RECEIVED ---");
+          log(`--- RECEIVED (${url}) ---`);
           log(data);
           const connection = users.get(uid)!;
           switch (url) {
-            case "/connect": {
+            case "/connect":
               connect(data, connection);
-            }
-            case "/reset": {
+              break;
+            case "/reset":
               reset(data);
-            }
-            case "/answer": {
+              break;
+            case "/answer":
               answer(data);
-            }
-            case "/status": {
+              break;
+            case "/status":
               status(data);
-            }
+              break;
           }
           res.writeHead(200, headers);
           res.end();

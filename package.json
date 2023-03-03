@@ -14,7 +14,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node --experimental-specifier-resolution=node ."
+    "start": "node --experimental-specifier-resolution=node .",
+    "prepare": "npm run build"
   },
   "keywords": [
     "vuejs",
