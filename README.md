@@ -1,4 +1,4 @@
-# slidev-poll-ws-server
+# slidev-poll-server
 
 WebSocket server for [slidev-component-poll](https://github.com/Smile-SA/slidev-component-poll).
 

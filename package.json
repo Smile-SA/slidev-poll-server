@@ -1,14 +1,14 @@
 {
-  "name": "slidev-poll-ws-server",
+  "name": "slidev-poll-server",
   "version": "0.0.0",
   "description": "WebSocket server for slidev-component-poll",
-  "homepage": "https://github.com/Smile-SA/slidev-poll-ws-server",
+  "homepage": "https://github.com/Smile-SA/slidev-poll-server",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Smile-SA/slidev-poll-ws-server.git"
+    "url": "git@github.com:Smile-SA/slidev-poll-server.git"
   },
   "bugs": {
-    "url": "https://github.com/Smile-SA/slidev-poll-ws-server/issues"
+    "url": "https://github.com/Smile-SA/slidev-poll-server/issues"
   },
   "type": "module",
   "main": "dist/index.js",
