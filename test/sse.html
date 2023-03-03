@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>NodeJS WebSocket Server</title>
+  </head>
+  <body>
+    <form id="connect" name="connect">
+      <label>
+        Connect :
+        <input placeholder="Type in id to create or join" name="id" />
+      </label>
+      <input type="submit" />
+    </form>
+    <form style="display: none" id="question" name="question">
+      <h1>What is your favorite color ?</h1>
+      <label>
+        Red:
+        <input type="radio" name="color" value="red" />
+      </label>
+      <label>
+        Green:
+        <input type="radio" name="color" value="green" />
+      </label>
+      <label>
+        Blue:
+        <input type="radio" name="color" value="blue" />
+      </label>
+      <input type="submit" />
+      <h2>Results</h2>
+      <div>Red: <span id="red">0</span>%</div>
+      <div>Green: <span id="green">0</span>%</div>
+      <div>Blue: <span id="blue">0</span>%</div>
+    </form>
+    <script>
+      const connectForm = document.getElementById("connect");
+      const questionForm = document.getElementById("question");
+      const redEl = document.getElementById("red");
+      const greenEl = document.getElementById("green");
+      const blueEl = document.getElementById("blue");
+      const answers = ["red", "green", "blue"];
+      let id;
+      let userId;
+
+      if (localStorage.getItem("userId")) {
+        userId = localStorage.getItem("userId");
+      } else {
+        userId = Math.random();
+        localStorage.setItem("userId", userId);
+      }
+
+      const es = new EventSource(`http://localhost:8080/event?uid=${userId}`);
+
+      connectForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        id = event.target.elements.id.value;
+        fetch(`http://localhost:8080/connect?uid=${userId}`, {
+          body: JSON.stringify({
+            type: "connect",
+            id,
+          }),
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+        });
+        questionForm.style.display = "block";
+      });
+
+      questionForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        fetch(`http://localhost:8080/answer?uid=${userId}`, {
+          body: JSON.stringify({
+            id,
+            pollId: "color",
+            userId,
+            result: event.target.elements.color.value,
+          }),
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+        });
+      });
+
+      es.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        console.log("data", data);
+        if (data.color) {
+          const state = data.color;
+          const counts = answers.map((color) =>
+            Object.values(state.results).reduce(
+              (acc, result) =>
+                acc +
+                Number(
+                  result instanceof Array
+                    ? result.indexOf(color) > -1
+                    : result === color
+                ),
+              0
+            )
+          );
+          const total = counts.reduce((a, b) => a + b, 0);
+          const percentages = counts.map((count) =>
+            total === 0 ? 0 : (count / total) * 100
+          );
+          redEl.innerText = percentages[0];
+          greenEl.innerText = percentages[1];
+          blueEl.innerText = percentages[2];
+        }
+      });
+    </script>
+  </body>
+</html>

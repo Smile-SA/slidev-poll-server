@@ -7,7 +7,6 @@ export enum PollStatus {
 }
 
 export interface Poll {
-  answers: string[]
   results: Record<string, Result>;
   status: PollStatus;
 }

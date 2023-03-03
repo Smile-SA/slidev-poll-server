@@ -35,4 +35,6 @@ Available environment variables:
 | Variable | Type | Default value | Description |
 |---|---|---|---|
 | PORT | `number` | `8080` | Change running port |
-| DEBUG | `'error' \| 'warn' \| 'info'`  | `'error'` | Debug level |
+| DEBUG | `'error' \| 'warn' \| 'info'` | `'error'` | Debug level |
+| WS | `boolean` | `false` | use WebSocket if `true`, else use HTTP Server Sent Events |
+| CORS_ORIGIN | `string` | `'*'` | Access-Control-Allow-Origin header for HTTP SSE |
