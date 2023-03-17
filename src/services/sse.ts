@@ -23,7 +23,7 @@ export function getUrl(
   if (!rawUrl) {
     return ["", {}];
   }
-  const [url, query] = rawUrl.split("?");
+  const [url, query = ''] = rawUrl.split("?");
   const params = query
     .split("&")
     .reduce<Record<string, string | string[]>>((acc, part) => {
@@ -56,6 +56,7 @@ export function initServer(port: number) {
             "Content-Type": "text/event-stream",
             "Cache-Control": "no-cache",
             Connection: "keep-alive",
+            "X-Accel-Buffering": "no",
           });
           res.write("\n");
         } else if (!uid) {
