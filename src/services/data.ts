@@ -4,6 +4,7 @@ import {
   WsBroadcastData,
   WsConnectData,
   WsData,
+  WsLoginData,
   WsResetData,
   WsStatusData,
 } from "../types/data";
@@ -27,6 +28,10 @@ export function isResetData(data: WsData): data is WsResetData {
 
 export function isStatusData(data: WsData): data is WsStatusData {
   return data.type === DataType.STATUS;
+}
+
+export function isLoginData(data: WsData): data is WsLoginData {
+  return data.type === DataType.LOGIN;
 }
 
 export function initPoll(poll?: Poll): Poll {

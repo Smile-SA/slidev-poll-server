@@ -12,3 +12,9 @@ export interface Poll {
 }
 
 export type PollState = Record<string, Poll>;
+export type UserState = Record<string, string>;
+
+export interface State {
+  users: UserState;
+  polls: PollState;
+}

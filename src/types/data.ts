@@ -4,8 +4,14 @@ export enum DataType {
   ANSWER = "answer",
   BROADCAST = "broadcast",
   CONNECT = "connect",
+  LOGIN = "login",
   RESET = "reset",
   STATUS = "status",
+}
+
+export enum SendType {
+  POLL = "poll",
+  USER = "user",
 }
 
 export interface Data {
@@ -58,4 +64,13 @@ export interface StatusData extends Data {
 
 export interface WsStatusData extends StatusData {
   type: DataType.STATUS;
+}
+
+export interface LoginData extends Data {
+  userId: string;
+  userName: string;
+}
+
+export interface WsLoginData extends LoginData {
+  type: DataType.LOGIN;
 }

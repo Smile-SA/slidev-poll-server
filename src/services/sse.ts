@@ -1,7 +1,8 @@
 import { createServer, IncomingMessage, ServerResponse } from "http";
+import { SendType } from "../types/data";
 
 import { SseConnections, Groups } from "../types/groups";
-import { PollState } from "../types/polls";
+import { PollState, UserState } from "../types/polls";
 
 import { log } from "./log";
 import { getRoutes } from "./routes";
@@ -23,7 +24,7 @@ export function getUrl(
   if (!rawUrl) {
     return ["", {}];
   }
-  const [url, query = ''] = rawUrl.split("?");
+  const [url, query = ""] = rawUrl.split("?");
   const params = query
     .split("&")
     .reduce<Record<string, string | string[]>>((acc, part) => {
@@ -39,7 +40,12 @@ export function getUrl(
 }
 
 export function initServer(port: number) {
-  const { answer, connect, reset, status } = getRoutes(groups, send, broadcast, addConnection);
+  const { answer, connect, login, reset, status } = getRoutes(
+    groups,
+    send,
+    broadcast,
+    addConnection
+  );
 
   const server = createServer(
     (req: IncomingMessage, res: ServerResponse<IncomingMessage>) => {
@@ -66,7 +72,7 @@ export function initServer(port: number) {
           res.writeHead(404);
           res.end();
         }
-      } else if (uid && users.has(uid) && req.method === 'POST') {
+      } else if (uid && users.has(uid) && req.method === "POST") {
         let body = "";
         req.on("data", (chunk) => (body += chunk));
         req.on("end", () => {
@@ -87,11 +93,14 @@ export function initServer(port: number) {
             case "/status":
               status(data);
               break;
+            case "/login":
+              login(data);
+              break;
           }
           res.writeHead(200, headers);
           res.end();
         });
-      } else if (req.method === 'OPTIONS') {
+      } else if (req.method === "OPTIONS") {
         res.writeHead(200, headers);
         res.end();
       } else {
@@ -114,22 +123,29 @@ export function removeConnection(connection: ServerResponse<IncomingMessage>) {
   connections.delete(connection);
 }
 
-export function send(res: ServerResponse<IncomingMessage>, data: unknown) {
+export function send(
+  res: ServerResponse<IncomingMessage>,
+  data: unknown,
+  type: SendType = SendType.POLL
+) {
   if (process.env.DEBUG === "info") {
     log("--- SEND ---");
+    log(type);
     log(data);
   }
+  res.write("event: " + type + "\n");
   res.write("data: " + JSON.stringify(data) + "\n\n");
 }
 
 export function broadcast(
   groupId: string,
-  state: PollState,
+  state: PollState | UserState,
+  type: SendType = SendType.POLL,
   connection?: ServerResponse<IncomingMessage>
 ) {
   for (const [conn, id] of connections.entries()) {
     if (groupId === id && conn !== connection) {
-      send(conn, state);
+      send(conn, state, type);
     }
   }
 }

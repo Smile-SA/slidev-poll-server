@@ -4,10 +4,13 @@ import { WebSocket } from "ws";
 import {
   AnswerData,
   ConnectData,
+  LoginData,
   ResetData,
+  SendType,
   StatusData,
 } from "../types/data";
 import { AddConnection, Broadcast, Group, Groups, Send } from "../types/groups";
+import { UserState } from "../types/polls";
 
 import { initPoll } from "./data";
 import { initGroup, removeOldGroups, updateGroup } from "./groups";
@@ -26,18 +29,19 @@ export function getRoutes<
           initGroup(groups, data.id, data.state);
         } else {
           const group = groups.get(data.id) as Group;
-          send(connection, group.state);
+          send(connection, group.polls);
+          send(connection, group.users, SendType.USER);
         }
       }
     },
     reset(data: ResetData) {
       if (data.id && groups.has(data.id)) {
         const group = groups.get(data.id) as Group;
-        if (data.pollId && group.state[data.pollId]) {
-          group.state[data.pollId] = initPoll(group.state[data.pollId]);
+        if (data.pollId && group.polls[data.pollId]) {
+          group.polls[data.pollId] = initPoll(group.polls[data.pollId]);
           updateGroup(groups, data.id, group);
           broadcast(data.id, {
-            [data.pollId]: group.state[data.pollId],
+            [data.pollId]: group.polls[data.pollId],
           });
         } else if (!data.pollId) {
           initGroup(groups, data.id, data.state);
@@ -45,25 +49,17 @@ export function getRoutes<
         }
       }
     },
-    // broadcast(data: BroadcastData) {
-    //   if (data.id && data.state && groups.has(data.id)) {
-    //     const group = groups.get(data.id) as Group;
-    //     group.state = data.state;
-    //     updateGroup(groups, data.id, group);
-    //     broadcast(data.id, group.state);
-    //   }
-    // },
     answer(data: AnswerData) {
       if (data.id && groups.has(data.id)) {
         const group = groups.get(data.id) as Group;
-        if (!group.state[data.pollId]) {
-          group.state[data.pollId] = initPoll();
+        if (!group.polls[data.pollId]) {
+          group.polls[data.pollId] = initPoll();
         }
         if (data.pollId && data.userId) {
-          group.state[data.pollId].results[data.userId] = data.result;
+          group.polls[data.pollId].results[data.userId] = data.result;
           updateGroup(groups, data.id, group);
           broadcast(data.id, {
-            [data.pollId]: group.state[data.pollId],
+            [data.pollId]: group.polls[data.pollId],
           });
         }
       }
@@ -71,17 +67,29 @@ export function getRoutes<
     status(data: StatusData) {
       if (data.id && groups.has(data.id)) {
         const group = groups.get(data.id) as Group;
-        if (!group.state[data.pollId]) {
-          group.state[data.pollId] = initPoll();
+        if (!group.polls[data.pollId]) {
+          group.polls[data.pollId] = initPoll();
         }
         if (data.pollId && data.status) {
-          group.state[data.pollId].status = data.status;
+          group.polls[data.pollId].status = data.status;
           updateGroup(groups, data.id, group);
           broadcast(data.id, {
-            [data.pollId]: group.state[data.pollId],
+            [data.pollId]: group.polls[data.pollId],
           });
         }
       }
     },
+    login(data: LoginData) {
+      if (data.id && groups.has(data.id)) {
+        const group = groups.get(data.id) as Group;
+        if (data.userId && data.userName) {
+          group.users[data.userId] = data.userName;
+          updateGroup(groups, data.id, group);
+          broadcast(data.id, {
+            [data.userId]: data.userName,
+          }, SendType.USER);
+        }
+      }
+    }
   };
 }

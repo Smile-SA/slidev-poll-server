@@ -23,7 +23,8 @@ export function initGroup(groups: Groups, id: string, state?: PollState) {
   const date = new Date();
   const group = {
     created: date,
-    state: state ?? {},
+    polls: state ?? {},
+    users: {},
     updated: date,
   };
   log(`--- INIT GROUP "${id}" ---`);
